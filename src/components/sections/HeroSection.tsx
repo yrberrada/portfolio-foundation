@@ -4,7 +4,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 const HeroSection = () => {
   const reduce = useReducedMotion();
-  const initial = (v: object) => (reduce ? false : v);
+  const initial = <T extends object>(v: T): T | false => (reduce ? false : v);
 
   return (
     <section id="home" className="relative min-h-screen w-full overflow-hidden">
