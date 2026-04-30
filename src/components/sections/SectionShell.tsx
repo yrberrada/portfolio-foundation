@@ -9,7 +9,7 @@ interface SectionShellProps {
 
 const SectionShell = ({ id, label, title, children }: SectionShellProps) => {
   return (
-    <section id={id} className="py-20">
+    <section id={id} className="py-20 md:py-24">
       <div className="container-x">
         <p className="section-label mb-3">{label}</p>
         <h2 className="font-display text-3xl md:text-4xl font-bold mb-8" style={{ color: "var(--text)" }}>
