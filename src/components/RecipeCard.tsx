@@ -16,8 +16,8 @@ const RecipeCard = ({ title, tagline, serves, tech, links, index = 0 }: RecipeCa
   const reduce = useReducedMotion();
 
   const hoverVariants = {
-    rest: { scale: 1, borderColor: "hsl(0 0% 100% / 0.06)" },
-    hover: { scale: 1.015, borderColor: "hsl(28 60% 55% / 0.35)" },
+    rest: { scale: 1, borderColor: "rgba(240, 235, 224, 0.08)" },
+    hover: { scale: 1.015, borderColor: "rgba(232, 164, 74, 0.20)" },
   };
 
   return (
