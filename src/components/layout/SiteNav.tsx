@@ -14,6 +14,9 @@ const SiteNav = () => {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("");
   const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.2 });
+  const scaleX: MotionValue<number> = reduce ? scrollYProgress : smoothProgress;
 
   useEffect(() => {
     const elements = SECTION_IDS
