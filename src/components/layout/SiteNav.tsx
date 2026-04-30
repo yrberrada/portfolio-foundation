@@ -13,6 +13,7 @@ const SECTION_IDS = NAV_LINKS.map((l) => l.href.slice(1));
 const SiteNav = () => {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("");
+  const reduce = useReducedMotion();
 
   useEffect(() => {
     const elements = SECTION_IDS
