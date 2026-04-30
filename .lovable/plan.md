@@ -1,50 +1,31 @@
-## Phase 1 — Hero Section ("The Kitchen")
+## Phase 2 — Experience Section ("Where I've Cooked")
 
-Single-file change: rewrite `src/components/sections/HeroSection.tsx`. Plus install `framer-motion` (not currently in `package.json`).
+Two file changes. No other files touched.
 
-### Dependency
-- Add `framer-motion` (used for entrance animations + `useReducedMotion`).
+### New file: `src/components/KitchenCard.tsx`
+Reusable card. Props: `company`, `role`, `stack`, `period`, `bullets: string[]`.
 
-### Layout
-- `<section id="home">`, `min-h-screen`, `overflow-hidden`.
-- Inside `.container-x`: `grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-24`.
+Layout:
+- `<motion.article>` with `relative pl-6 py-4`.
+- 2px left border via an absolutely-positioned `<motion.span>` (so it can animate `scaleY 0→1` from `origin-top`), `background: var(--accent)`.
+- Company — Playfair Display 700, `1.1rem`, `--text`.
+- Row with `flex justify-between items-baseline`: role left, period right. DM Sans 400, `0.875rem`, `--text-muted`.
+- Stack — JetBrains Mono 400, `0.75rem`, `--text-dim`, `mt-1`.
+- Bullets — `<ul>` with `flex flex-col gap-1.5`, `mt-3`. Each `<li>` is `flex gap-3`; first child is "—" in `--accent-warm`, second is the bullet text. DM Sans 400, `0.9375rem`, line-height 1.5, `--text-muted`.
 
-### Left column (text)
-1. Section label — "The Kitchen" via `.section-label`.
-2. Name — `font-display font-black`, `font-size: clamp(2.8rem, 5.5vw, 4.5rem)`, color `--text`, `leading-[1.05]`.
-3. Role — "Full-Stack Developer & Designer", DM Sans 300, `1.25rem`, `--text-muted`.
-4. Rule — 48px wide × 1px, `background: var(--border-warm)`, margin `1.5rem 0` (animates from width 0 → 48).
-5. Bio — DM Sans 400, `1rem`, line-height 1.6, `max-w-md`, `--text-muted`. Exact copy from prompt.
-6. CTAs — flex row, gap-3:
-   - Primary `<a href="#projects">` "See the Menu": bg `--accent`, color `#fff`, DM Sans 500, `px-6 py-3`, `border-radius: var(--radius-sm)`. Hover: bg `#c25a26` (~8% darker than `#d4622a`).
-   - Secondary `<a href="/resume.pdf" target="_blank" rel="noopener noreferrer">` "Download Recipe": transparent bg, `border: 1px solid var(--border-warm)`, color `--text`, DM Sans 400. Hover: bg `--bg-raised`.
+Animations (respects `useReducedMotion`):
+- Card: `whileInView` `opacity 0→1`, `y 20→0`, viewport `{ once: true, amount: 0.2 }`, duration ~0.6s.
+- Left border: `whileInView` `scaleY 0→1`, same viewport opts, duration 0.4s ease-out.
 
-### Right column (ambient)
-- Full column height (`h-[60vh] lg:h-screen`).
-- `background: radial-gradient(ellipse at center, var(--accent-dim) 0%, var(--bg) 70%)`.
-- Absolutely-positioned centered span with the text "mise en place":
-  - Playfair Display italic, `font-size: 15vw`, `color: var(--text-dim)`, `opacity: 0.04`.
-  - `pointer-events-none select-none whitespace-nowrap`.
-  - `aria-hidden`.
+### Rewrite: `src/components/sections/ExperienceSection.tsx`
+Replaces the empty `null` placeholder.
 
-### Animations (framer-motion)
-Use `useReducedMotion()` — when true, render with `initial={false}` so nothing animates (CSS reduced-motion media query already neutralizes transitions as a backstop).
+- `<section id="experience" className="py-20">` with `.container-x`.
+- Section header (inline, not via SectionShell — the prompt's spec differs from SectionShell's mb/title size, and SectionShell is reused by other sections):
+  - `<p className="section-label mb-3">Where I've Cooked</p>`
+  - `<h2>` — Playfair Display 700, `2rem`, `--text`, `border-bottom: 2px solid var(--border)`, `pb-3 mb-10` (≈2.5rem).
+- One `<KitchenCard>` with the exact Go Optimal data from the prompt (company, role, stack, period, 4 bullets verbatim).
 
-| Element | initial | animate | delay |
-|---|---|---|---|
-| Section label | `opacity: 0` | `opacity: 1` | 0s |
-| Name | `opacity: 0, y: 30` | `opacity: 1, y: 0` | 0.05s |
-| Role | `opacity: 0, y: 10` | `opacity: 1, y: 0` | 0.10s |
-| Rule | `width: 0` | `width: 48` | 0.15s |
-| Bio | `opacity: 0` | `opacity: 1` | 0.20s |
-| CTAs | `opacity: 0, y: 10` | `opacity: 1, y: 0` | 0.28s |
-| Right column | `opacity: 0` | `opacity: 1` | 0.10s |
-
-Duration ~0.5–0.7s, ease `[0.22, 1, 0.36, 1]`. These fire on mount (hero is above the fold, so `whileInView` isn't needed — `once: true` only matters for scroll reveals).
-
-### Notes / caveats
-- `/resume.pdf` does not exist in `public/`. Link will 404 until you drop the file. No placeholder will be created — the design doc and your prompt both specify the path, so I'll wire the link as-is.
-- No other files touched. Nav already lives in `SiteNav.tsx`; not adding nav here.
-- `font-light` is not in the default Tailwind weight list issue — DM Sans 300 is loaded via the Google Fonts import in `index.css`, so `font-weight: 300` will resolve.
-
-After approval I'll install `framer-motion` and write the new `HeroSection.tsx`.
+### Notes
+- Not modifying `SectionShell.tsx` — its existing styling is used by other sections, and the prompt forbids touching anything else. Header is inlined here; can refactor later when other sections adopt the same pattern.
+- `framer-motion` already installed in Phase 1.
