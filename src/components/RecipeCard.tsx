@@ -94,9 +94,9 @@ const RecipeCard = ({ title, tagline, serves, tech, links, index = 0 }: RecipeCa
         ))}
       </div>
 
-      {(links?.github || links?.live) && (
+      {(links?.github?.trim() || links?.live?.trim()) && (
         <div className="mt-4 flex gap-4">
-          {links.live && (
+          {links.live?.trim() && (
             <a
               href={links.live}
               target="_blank"
@@ -109,7 +109,7 @@ const RecipeCard = ({ title, tagline, serves, tech, links, index = 0 }: RecipeCa
               Live <ArrowUpRight size={12} />
             </a>
           )}
-          {links.github && (
+          {links.github?.trim() && (
             <a
               href={links.github}
               target="_blank"

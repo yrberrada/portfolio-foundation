@@ -43,7 +43,7 @@ const ContactSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr,1.2fr] gap-10 lg:gap-12">
           {/* LEFT — context */}
           <motion.div
-            className="relative"
+            className="relative overflow-hidden"
             initial={initial({ opacity: 0, y: 20 })}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
@@ -51,11 +51,11 @@ const ContactSection = () => {
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 pointer-events-none font-display italic"
+              className="absolute left-0 top-0 pointer-events-none font-display italic whitespace-nowrap"
               style={{
                 color: "var(--text-dim)",
                 opacity: 0.06,
-                fontSize: "8rem",
+                fontSize: "clamp(4rem, 10vw, 8rem)",
                 lineHeight: 1,
                 userSelect: "none",
                 zIndex: 0,
