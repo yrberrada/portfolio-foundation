@@ -24,7 +24,7 @@ const KitchenCard = ({ company, role, stack, period, bullets }: KitchenCardProps
 
   const barVariants = {
     hidden: { scaleY: 0 },
-    show: { scaleY: 1, transition: { duration: 0.4, ease: "easeOut", delay: 0.15 } },
+    show: { scaleY: 1, transition: { duration: 0.4, ease: "easeOut" as const, delay: 0.15 } },
   };
 
   return (
