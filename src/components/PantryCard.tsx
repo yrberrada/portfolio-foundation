@@ -11,21 +11,23 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const PantryCard = ({ group, items, index = 0 }: PantryCardProps) => {
   const reduce = useReducedMotion();
 
+  const restState = { borderColor: "rgba(240, 235, 224, 0.08)", y: 0 };
+  const hoverState = { borderColor: "rgba(232, 164, 74, 0.20)", y: -2 };
+
   return (
     <motion.article
-      className="transition-colors duration-200"
       style={{
         backgroundColor: "var(--bg-surface)",
-        border: "1px solid var(--border)",
+        borderWidth: "1px",
+        borderStyle: "solid",
         borderRadius: "var(--radius)",
         padding: "1.25rem",
       }}
-      initial={reduce ? false : { opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { opacity: 0, y: 15, ...restState }}
+      whileInView={{ opacity: 1, ...restState }}
       viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.5, delay: index * 0.06, ease: EASE }}
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--border-warm)")}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+      whileHover={reduce ? undefined : hoverState}
     >
       <h3
         className="font-sans"
