@@ -1,63 +1,50 @@
-## Heads up before we start
+## Phase 1 — Hero Section ("The Kitchen")
 
-Your prompt was written for a Next.js project (`src/app/layout.tsx`, `src/app/page.tsx`, `src/app/globals.css`, `next/font/google`). **This project is Vite + React + React Router** — there is no `src/app/` directory, no Next.js, no `next/font`.
+Single-file change: rewrite `src/components/sections/HeroSection.tsx`. Plus install `framer-motion` (not currently in `package.json`).
 
-Also, none of the "chess" files exist here, and `three`, `@react-three/fiber`, `@react-three/drei`, and `swiper` are not in `package.json`. So Step 1 of your prompt is a no-op on this codebase.
+### Dependency
+- Add `framer-motion` (used for entrance animations + `useReducedMotion`).
 
-I'll therefore translate Prompt 0 to the equivalent Vite/React structure and skip the cleanup. If you actually meant to run this against a different repo, stop me and point me at it.
+### Layout
+- `<section id="home">`, `min-h-screen`, `overflow-hidden`.
+- Inside `.container-x`: `grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-screen py-24`.
 
----
+### Left column (text)
+1. Section label — "The Kitchen" via `.section-label`.
+2. Name — `font-display font-black`, `font-size: clamp(2.8rem, 5.5vw, 4.5rem)`, color `--text`, `leading-[1.05]`.
+3. Role — "Full-Stack Developer & Designer", DM Sans 300, `1.25rem`, `--text-muted`.
+4. Rule — 48px wide × 1px, `background: var(--border-warm)`, margin `1.5rem 0` (animates from width 0 → 48).
+5. Bio — DM Sans 400, `1rem`, line-height 1.6, `max-w-md`, `--text-muted`. Exact copy from prompt.
+6. CTAs — flex row, gap-3:
+   - Primary `<a href="#projects">` "See the Menu": bg `--accent`, color `#fff`, DM Sans 500, `px-6 py-3`, `border-radius: var(--radius-sm)`. Hover: bg `#c25a26` (~8% darker than `#d4622a`).
+   - Secondary `<a href="/resume.pdf" target="_blank" rel="noopener noreferrer">` "Download Recipe": transparent bg, `border: 1px solid var(--border-warm)`, color `--text`, DM Sans 400. Hover: bg `--bg-raised`.
 
-## Phase 0 — Foundation (this plan)
+### Right column (ambient)
+- Full column height (`h-[60vh] lg:h-screen`).
+- `background: radial-gradient(ellipse at center, var(--accent-dim) 0%, var(--bg) 70%)`.
+- Absolutely-positioned centered span with the text "mise en place":
+  - Playfair Display italic, `font-size: 15vw`, `color: var(--text-dim)`, `opacity: 0.04`.
+  - `pointer-events-none select-none whitespace-nowrap`.
+  - `aria-hidden`.
 
-### 1. Cleanup
-- Skip — chess files, `public/models/`, three.js, and swiper are not present.
+### Animations (framer-motion)
+Use `useReducedMotion()` — when true, render with `initial={false}` so nothing animates (CSS reduced-motion media query already neutralizes transitions as a backstop).
 
-### 2. Design system in `src/index.css`
-Full rewrite:
-- Google Fonts `@import` at top: Playfair Display (700, 900), DM Sans (300, 400, 500), JetBrains Mono (400).
-- Tailwind directives.
-- `:root` CSS variables exactly per design doc Section 2 (`--bg`, `--bg-surface`, `--bg-raised`, `--text`, `--text-muted`, `--text-dim`, `--accent`, `--accent-warm`, `--accent-dim`, `--border`, `--border-warm`, `--radius`, `--radius-sm`, `--radius-lg`).
-- Map these into HSL-compatible Tailwind tokens via `tailwind.config.ts` (extend `colors` and `fontFamily`) so we can use `bg-bg`, `text-text-muted`, `font-display`, `font-mono`, etc. Note: the existing config uses the shadcn HSL token system; I'll add the new tokens alongside without ripping out shadcn so existing UI components keep working.
-- Base styles: `html { scroll-smooth }`, `body { antialiased; background: var(--bg); color: var(--text); font-family: 'DM Sans' }`.
-- Utilities: `.container-x` (max-w-5xl mx-auto px-6 — naming to avoid clashing with Tailwind's `.container`), `.text-muted`, `.text-dim`, `.bg-surface`, `.bg-raised`, `.border-default`, `.border-warm`, `.tag` (JetBrains Mono pill: `--accent-dim` bg, `--accent-warm` text, 4px radius, 2px 8px padding), `.section-label` (uppercase JetBrains Mono, `--text-dim`, 0.75rem, letter-spacing 0.12em).
-- `@media (prefers-reduced-motion: reduce)` disabling transitions/animations.
+| Element | initial | animate | delay |
+|---|---|---|---|
+| Section label | `opacity: 0` | `opacity: 1` | 0s |
+| Name | `opacity: 0, y: 30` | `opacity: 1, y: 0` | 0.05s |
+| Role | `opacity: 0, y: 10` | `opacity: 1, y: 0` | 0.10s |
+| Rule | `width: 0` | `width: 48` | 0.15s |
+| Bio | `opacity: 0` | `opacity: 1` | 0.20s |
+| CTAs | `opacity: 0, y: 10` | `opacity: 1, y: 0` | 0.28s |
+| Right column | `opacity: 0` | `opacity: 1` | 0.10s |
 
-### 3. Shell — `src/components/layout/SiteNav.tsx` + `SiteFooter.tsx`
-Since there's no Next.js layout, I'll create dedicated layout components and use them in pages.
-- **Nav**: sticky, `backdrop-blur`, bg `rgba(10,10,8,0.85)`, no border, `box-shadow: 0 1px 0 var(--border)`. Left = "Yassine Berrada" (DM Sans 500). Right = anchor links: "Tonight's Menu" → `#projects`, "The Pantry" → `#skills`, "The Training" → `#education`, "Let's Cook" → `#contact`. (Doc also shows "The Kitchen" / "Where I've Cooked" — I'll match the prompt's list of four; happy to add more.)
-- **Footer**: minimal — `© {year} Yassine Berrada` + email link only.
-- No chess references anywhere.
+Duration ~0.5–0.7s, ease `[0.22, 1, 0.36, 1]`. These fire on mount (hero is above the fold, so `whileInView` isn't needed — `once: true` only matters for scroll reveals).
 
-### 4. Page wiring — `src/pages/Index.tsx`
-Replace placeholder. Render in this order, each as a section with the correct `id`:
-1. `HeroSection` (placeholder returning a minimal labeled stub)
-2. `ExperienceSection` (placeholder, returns `null` per your prompt)
-3. `ProjectsSection` (placeholder)
-4. `SkillsSection` (placeholder)
-5. `EducationSection` (placeholder)
-6. `ContactSection` (placeholder)
+### Notes / caveats
+- `/resume.pdf` does not exist in `public/`. Link will 404 until you drop the file. No placeholder will be created — the design doc and your prompt both specify the path, so I'll wire the link as-is.
+- No other files touched. Nav already lives in `SiteNav.tsx`; not adding nav here.
+- `font-light` is not in the default Tailwind weight list issue — DM Sans 300 is loaded via the Google Fonts import in `index.css`, so `font-weight: 300` will resolve.
 
-All section files created under `src/components/sections/` as empty placeholders that just render the section shell with the culinary section label + Playfair title — no real content yet. This keeps Phase 0 truly content-free while still letting nav anchors work.
-
-Update metadata in `index.html`: `<title>Yassine Berrada Rekhami — Full-Stack Developer</title>` and an appropriate meta description.
-
-### 5. Content JSON
-- Create `src/content/projects.json` with the 6 projects from design doc Section 10 verbatim.
-- Create `src/content/skills.json` with the 6 skill groups from design doc Section 10 verbatim.
-- Add `"resolveJsonModule": true` check (already on by default in the Vite TS config — will verify, no edit if present).
-
-### 6. Do not touch
-- No `src/lib/motion.ts` work (file doesn't exist; won't create it in this phase).
-- No `tsconfig.json` changes.
-- No shadcn `ui/*` component changes.
-- No section content beyond stub shells.
-
----
-
-## Technical notes
-- Tailwind extension: add `colors.bg`, `colors['bg-surface']`, `colors['bg-raised']`, `colors.text`, `colors['text-muted']`, `colors['text-dim']`, `colors.accent`, `colors['accent-warm']`, `colors['accent-dim']`, `colors['border-warm']`, plus `fontFamily.display = ['"Playfair Display"', 'serif']`, `fontFamily.sans = ['"DM Sans"', 'sans-serif']`, `fontFamily.mono = ['"JetBrains Mono"', 'monospace']`. Existing shadcn HSL tokens stay untouched.
-- Anchor scrolling works with `scroll-smooth` on `html` + `id` on each section element — no router changes needed.
-- Section placeholders will have `min-height` + the `.section-label` + Playfair title so the page is navigable, but no real copy. You'll fill them in subsequent prompts.
-
-After approval I'll execute the above. Then we move to your next prompt for actual section content.
+After approval I'll install `framer-motion` and write the new `HeroSection.tsx`.
