@@ -15,26 +15,26 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const RecipeCard = ({ title, tagline, serves, tech, links, index = 0 }: RecipeCardProps) => {
   const reduce = useReducedMotion();
 
+  const hoverVariants = {
+    rest: { scale: 1, borderColor: "rgba(240, 235, 224, 0.08)" },
+    hover: { scale: 1.015, borderColor: "rgba(232, 164, 74, 0.20)" },
+  };
+
   return (
     <motion.article
-      className="group relative p-6 transition-colors duration-200"
+      className="group relative p-6"
       style={{
         background:
           "linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-raised) 100%)",
-        border: "1px solid var(--border)",
+        borderWidth: "1px",
+        borderStyle: "solid",
         borderRadius: "var(--radius)",
       }}
-      initial={reduce ? false : { opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduce ? false : { opacity: 0, y: 20, ...hoverVariants.rest }}
+      whileInView={{ opacity: 1, y: 0, ...hoverVariants.rest }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.5, delay: index * 0.07, ease: EASE }}
-      whileHover={
-        reduce
-          ? undefined
-          : { scale: 1.015, transition: { duration: 0.2, ease: "easeOut" } }
-      }
-      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--border-warm)")}
-      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border)")}
+      whileHover={reduce ? undefined : hoverVariants.hover}
     >
       <h3
         className="font-display"

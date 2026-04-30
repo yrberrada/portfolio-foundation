@@ -13,22 +13,33 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 const KitchenCard = ({ company, role, stack, period, bullets }: KitchenCardProps) => {
   const reduce = useReducedMotion();
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: EASE, when: "beforeChildren" as const },
+    },
+  };
+
+  const barVariants = {
+    hidden: { scaleY: 0 },
+    show: { scaleY: 1, transition: { duration: 0.4, ease: "easeOut" as const, delay: 0.15 } },
+  };
+
   return (
     <motion.article
       className="relative pl-6 py-4"
-      initial={reduce ? false : { opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      variants={containerVariants}
+      initial={reduce ? false : "hidden"}
+      whileInView="show"
       viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6, ease: EASE }}
     >
       <motion.span
         aria-hidden="true"
         className="absolute left-0 top-0 bottom-0 w-[2px] origin-top"
         style={{ backgroundColor: "var(--accent)" }}
-        initial={reduce ? false : { scaleY: 0 }}
-        whileInView={{ scaleY: 1 }}
-        viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
+        variants={barVariants}
       />
 
       <h3
