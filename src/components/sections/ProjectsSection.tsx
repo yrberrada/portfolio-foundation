@@ -17,7 +17,7 @@ const ProjectsSection = () => {
   const reduce = useReducedMotion();
 
   return (
-    <section id="projects" className="py-20">
+    <section id="projects" className="pt-20 pb-28 md:pt-24 md:pb-32">
       <div className="container-x">
         <motion.p
           className="section-label mb-3"

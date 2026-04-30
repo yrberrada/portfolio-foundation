@@ -25,7 +25,7 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-20">
+    <section id="contact" className="pt-28 pb-20 md:pt-36 md:pb-24">
       <div className="container-x">
         {/* Header */}
         <p className="section-label mb-3">Let's Cook Something</p>

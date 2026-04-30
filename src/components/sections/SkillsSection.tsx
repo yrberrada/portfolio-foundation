@@ -10,7 +10,7 @@ const SkillsSection = () => {
   const groups = skills as SkillGroup[];
 
   return (
-    <section id="skills" className="py-20">
+    <section id="skills" className="py-16 md:py-20">
       <div className="container-x">
         <p className="section-label mb-3">The Pantry</p>
         <h2

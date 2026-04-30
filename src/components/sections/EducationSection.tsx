@@ -14,7 +14,7 @@ const EducationSection = () => {
   const reduce = useReducedMotion();
 
   return (
-    <section id="education" className="py-20">
+    <section id="education" className="py-16 md:py-20">
       <div className="container-x">
         <p className="section-label mb-3">The Training</p>
         <h2
