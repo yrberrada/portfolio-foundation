@@ -184,6 +184,20 @@ const SiteNav = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          transformOrigin: "0% 50%",
+          backgroundColor: "var(--accent)",
+          scaleX,
+        }}
+      />
     </header>
   );
 };
