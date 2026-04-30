@@ -1,20 +1,21 @@
 const SiteFooter = () => {
-  const year = new Date().getFullYear();
   return (
     <footer className="mt-24 py-10" style={{ borderTop: "1px solid var(--border)" }}>
-      <div className="container-x flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-        <p className="font-sans text-sm" style={{ color: "var(--text-dim)" }}>
-          © {year} Yassine Berrada Rekhami
-        </p>
-        <a
-          href="mailto:berra046@d.umn.edu"
-          className="font-sans text-sm transition-colors"
-          style={{ color: "var(--text-muted)" }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent-warm)")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+      <div className="container-x">
+        <p
+          className="font-sans text-center"
+          style={{ color: "var(--text-dim)", fontSize: "0.8rem", fontWeight: 400 }}
         >
-          berra046@d.umn.edu
-        </a>
+          © 2026 Yassine Berrada Rekhami ·{" "}
+          <a
+            href="mailto:yrberrada@gmail.com"
+            style={{ color: "var(--text-dim)", transition: "color 200ms" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--accent-warm)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-dim)")}
+          >
+            yrberrada@gmail.com
+          </a>
+        </p>
       </div>
     </footer>
   );

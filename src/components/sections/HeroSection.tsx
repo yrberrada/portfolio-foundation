@@ -80,6 +80,7 @@ const HeroSection = () => {
             >
               See the Menu
             </a>
+            {/* TODO: Add resume PDF to public/ (e.g. public/resume.pdf) and confirm filename matches this href */}
             <a
               href="/resume.pdf"
               target="_blank"
