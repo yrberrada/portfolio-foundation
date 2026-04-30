@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 const NAV_LINKS = [
   { label: "Tonight's Menu", href: "#projects" },
