@@ -1,43 +1,57 @@
-# Prompt A — Critical Bug Fixes
+# Prompt B — Animation & Hover System
 
-Four targeted fixes across three files. No design tokens or content changes.
+Consolidate ad-hoc DOM mutations into Framer Motion variants, fix KitchenCard accent-bar timing, and add proper enter/exit animation to the mobile nav dropdown.
 
-## 1. `src/components/RecipeCard.tsx` — Empty GitHub link condition
+## 1. `src/components/RecipeCard.tsx` — Hover via Framer variants
 
-**Bug:** `projects.json` has `"github": ""` for 5 of 6 projects. The current check `links?.github` is truthy for the object key but `links.github` (empty string) renders a clickable "GitHub ↗" link that goes nowhere.
+**Current:** Hover does two things — `whileHover={{ scale: 1.015 }}` (Framer) AND `onMouseEnter/Leave` directly mutating `borderColor`. Mixing imperative DOM mutation with Framer transforms causes jank and isn't reduced-motion aware for the border.
 
 **Fix:**
-- Change the outer conditional from `(links?.github || links?.live)` to truthy-string checks: `(links?.github?.trim() || links?.live?.trim())`.
-- Wrap each individual link render in the same trimmed-truthy check so an empty string never produces an `<a>`.
+- Replace `onMouseEnter`/`onMouseLeave` with Framer `variants` + `whileHover`.
+- Define `cardVariants = { rest: { scale: 1, borderColor: "var(--border)" }, hover: { scale: 1.015, borderColor: "var(--border-warm)" } }`.
+- Set `initial="rest"`, `whileHover={reduce ? undefined : "hover"}`, `transition={{ duration: 0.2, ease: "easeOut" }}`.
+- Remove inline `borderColor` from `style` (variants own it). Keep border width/style on the element.
+- Drop the redundant `transition-colors` Tailwind class.
 
-## 2. `src/components/sections/HeroSection.tsx` — Mobile layout + "mise en place" overflow
+## 2. `src/components/PantryCard.tsx` — Hover via Framer variants
 
-**Bugs:**
-- On mobile, the right ambient panel takes `60vh` and pushes the hero to ~160vh total — feels broken on phones.
-- `font-size: 15vw` with `whitespace-nowrap` makes "mise en place" wider than the viewport on narrow screens, causing horizontal scroll (the parent has no `overflow-hidden` on the inner grid, only the section).
+**Current:** Same pattern — imperative `onMouseEnter/Leave` swapping `borderColor`.
 
-**Fixes:**
-- Hide the right ambient column on mobile (`hidden lg:block`) so the hero is a clean single column on phones. Keep it as-is on `lg+`.
-- Reduce min-height on mobile: change grid from `min-h-screen` to `min-h-[80vh] lg:min-h-screen` and tighten `py-24` to `py-20 lg:py-24`.
-- Add `overflow-hidden` to the ambient panel itself (belt-and-suspenders, since the section already has it) and clamp the ambient text size: `fontSize: clamp(6rem, 12vw, 14rem)` so it never exceeds the panel width.
+**Fix:**
+- Add `whileHover` with a variants object: `{ rest: { borderColor: "var(--border)", y: 0 }, hover: { borderColor: "var(--border-warm)", y: -2 } }`.
+- Subtle 2px lift on hover for parity with RecipeCard's scale, gated by `reduce`.
+- Remove the imperative handlers and the `transition-colors` class.
 
-## 3. `src/components/sections/ContactSection.tsx` — "bon appétit" overflow
+## 3. `src/components/KitchenCard.tsx` — Accent bar delay
 
-**Bug:** The `8rem` absolute-positioned italic word sits inside a relative container with no overflow clipping. On narrow viewports (and even desktop ~<500px column width), it overflows horizontally and can trigger page-level horizontal scroll. It also sits above the form on mobile because the left column stacks first.
+**Current:** The vertical accent bar uses its own `whileInView` with `viewport={{ amount: 0.2 }}`, which can fire before the parent article's enter animation completes — the bar appears before the card content settles, looking out of sync.
 
-**Fixes:**
-- Add `overflow-hidden` to the left column wrapper so the ambient word is clipped to its column.
-- Clamp ambient size: `fontSize: clamp(4rem, 10vw, 8rem)` so it scales down on small screens.
-- Add `whitespace-nowrap` plus `left-0 top-0` explicit positioning so it anchors predictably.
+**Fix:**
+- Drive the accent bar from the parent's animation orchestration using `variants`:
+  - Parent variants: `{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE, when: "beforeChildren", staggerChildren: 0.1 } } }`.
+  - Bar variants: `{ hidden: { scaleY: 0 }, show: { scaleY: 1, transition: { duration: 0.4, ease: "easeOut", delay: 0.15 } } }`.
+- Parent uses `initial="hidden"`, `whileInView="show"`, `viewport={{ once: true, amount: 0.2 }}`. Bar uses `variants={barVariants}` only — no own `whileInView`.
+- This guarantees the bar grows after the card has faded/translated in.
+
+## 4. `src/components/layout/SiteNav.tsx` — Mobile nav AnimatePresence
+
+**Current:** The mobile dropdown is `{open && <div>...</div>}` — pops in/out instantly with no exit animation. Feels broken next to the rest of the site.
+
+**Fix:**
+- Wrap the dropdown in `<AnimatePresence>` and convert the `<div>` to `<motion.div>`.
+- Variants: `initial={{ opacity: 0, y: -8 }}`, `animate={{ opacity: 1, y: 0 }}`, `exit={{ opacity: 0, y: -8 }}`, `transition={{ duration: 0.2, ease: "easeOut" }}`.
+- Respect `useReducedMotion()` — if reduced, skip the y translate (opacity only) or use `initial={false}`.
+- Hamburger icon: animate the three bars to a subtle "X" hint by rotating top/bottom bars when `open` (top: rotate 45deg + translateY ~8px; middle: opacity 0; bottom: rotate -45deg + translateY -8px). Use Framer `animate` props on each `motion.span`. Keep reduced-motion aware (snap, no transition).
 
 ## Out of scope
 
-- No changes to design tokens, copy, animation easing, or other sections.
-- No changes to `projects.json` (empty github strings stay; the card just won't render dead links).
-- No new components.
+- No design token, content, copy, or layout changes.
+- No changes to other section files or `Index.tsx`.
+- No changes to the desktop nav active-underline behavior.
 
 ## Files touched
 
 - `src/components/RecipeCard.tsx`
-- `src/components/sections/HeroSection.tsx`
-- `src/components/sections/ContactSection.tsx`
+- `src/components/PantryCard.tsx`
+- `src/components/KitchenCard.tsx`
+- `src/components/layout/SiteNav.tsx`
