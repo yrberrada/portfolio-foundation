@@ -1,0 +1,8 @@
+[
+  { "group": "Languages", "items": ["TypeScript", "JavaScript", "Go", "Python", "C++", "SQL", "Java", "Dart"] },
+  { "group": "Frontend", "items": ["React", "Next.js", "Tailwind CSS", "Framer Motion"] },
+  { "group": "Backend & APIs", "items": ["Node.js", "FastAPI", "REST APIs", "Prisma ORM", "NextAuth", "Express.js", "Supabase Edge Functions"] },
+  { "group": "Databases", "items": ["PostgreSQL", "Supabase (RLS)", "SQLite", "MongoDB", "Firestore"] },
+  { "group": "Tools & Platforms", "items": ["Git", "GitHub", "Lovable", "Figma", "AWS (S3/IAM)", "Firebase", "Vercel", "Unix/Linux"] },
+  { "group": "Practices", "items": ["Agile/Scrum", "Technical Documentation", "Stakeholder Management", "AI-assisted Development"] }
+]

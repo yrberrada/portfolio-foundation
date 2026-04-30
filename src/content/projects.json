@@ -1,0 +1,44 @@
+[
+  {
+    "title": "Pulse — Project Intelligence",
+    "tagline": "Internal Gantt platform for the Optimal team. Multi-view timeline, drag-and-drop persistence, Google OAuth with RLS.",
+    "serves": "3 engineers, daily",
+    "tech": ["React", "TypeScript", "Supabase", "PostgreSQL", "Tailwind"],
+    "links": { "github": "" }
+  },
+  {
+    "title": "Symphony Operations",
+    "tagline": "Rule-based production scheduling engine for a $16M/yr commercial signage manufacturer. 11 departments, 9-endpoint API.",
+    "serves": "14 dept. leads, 60+ active jobs",
+    "tech": ["React", "TypeScript", "Supabase", "REST", "Node.js"],
+    "links": { "github": "" }
+  },
+  {
+    "title": "TGI Progressions Builder",
+    "tagline": "Course player app for The Guitar Institute. 2 courses, drip-lock logic, Admin CRUD, YouTube edge function, 3 sales pages.",
+    "serves": "Guitar students + admin team",
+    "tech": ["React", "Supabase", "Next.js", "Tailwind", "Lovable"],
+    "links": { "github": "" }
+  },
+  {
+    "title": "Full-Stack Intranet Platform",
+    "tagline": "End-to-end intranet with RBAC, 14+ normalized DB models, NextAuth, and reusable component library.",
+    "serves": "Multi-department org",
+    "tech": ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
+    "links": { "github": "" }
+  },
+  {
+    "title": "JobFlow Notion Sync API",
+    "tagline": "Idempotent sync pipeline in Go + FastAPI mirroring job data to Notion. Schema validation, retry logic, SQLite → PostgreSQL path.",
+    "serves": "Job tracking workflow",
+    "tech": ["Go", "FastAPI", "Notion API", "PostgreSQL"],
+    "links": { "github": "" }
+  },
+  {
+    "title": "Baseball Player Database",
+    "tagline": "NoSQL database with optimized aggregation pipelines for 50K+ player records. 2× query performance improvement.",
+    "serves": "Sports analytics",
+    "tech": ["MongoDB", "Schema Design", "Indexing"],
+    "links": { "github": "https://github.com/yrberrada/-IMDB-Data-Converter" }
+  }
+]
