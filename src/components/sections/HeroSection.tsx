@@ -8,7 +8,7 @@ const HeroSection = () => {
 
   return (
     <section id="home" className="relative min-h-screen w-full overflow-hidden">
-      <div className="container-x grid min-h-screen grid-cols-1 items-center gap-12 py-24 lg:grid-cols-2">
+      <div className="container-x grid min-h-[80vh] lg:min-h-screen grid-cols-1 items-center gap-12 py-20 lg:py-24 lg:grid-cols-2">
         {/* LEFT — text */}
         <div className="relative z-10">
           <motion.p
@@ -102,7 +102,7 @@ const HeroSection = () => {
 
         {/* RIGHT — ambient visual */}
         <motion.div
-          className="relative h-[60vh] lg:h-screen"
+          className="relative h-screen overflow-hidden hidden lg:block"
           style={{
             background:
               "radial-gradient(ellipse at center, var(--accent-dim) 0%, var(--bg) 70%)",
@@ -117,7 +117,7 @@ const HeroSection = () => {
             style={{
               color: "var(--text-dim)",
               opacity: 0.04,
-              fontSize: "15vw",
+              fontSize: "clamp(6rem, 12vw, 14rem)",
               lineHeight: 1,
             }}
           >
