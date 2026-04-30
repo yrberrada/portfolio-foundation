@@ -66,37 +66,37 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.28, ease: EASE }}
           >
-            <a
+            <motion.a
               href="#projects"
-              className="font-sans px-6 py-3 transition-colors"
+              className="font-sans px-6 py-3"
               style={{
-                backgroundColor: "var(--accent)",
+                backgroundColor: "#d4622a",
                 color: "#ffffff",
                 borderRadius: "var(--radius-sm)",
                 fontWeight: 500,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#c25a26")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--accent)")}
+              whileHover={reduce ? undefined : { backgroundColor: "#c25a26" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               See the Menu
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href="/resume.pdf"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-sans px-6 py-3 transition-colors"
+              className="font-sans px-6 py-3"
               style={{
                 color: "var(--text)",
                 border: "1px solid var(--border-warm)",
                 borderRadius: "var(--radius-sm)",
-                backgroundColor: "transparent",
+                backgroundColor: "rgba(0,0,0,0)",
                 fontWeight: 400,
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--bg-raised)")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+              whileHover={reduce ? undefined : { backgroundColor: "rgba(255,255,255,0.04)" }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
             >
               Download Recipe
-            </a>
+            </motion.a>
           </motion.div>
         </div>
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useSpring, type MotionValue } from "framer-motion";
 
 const NAV_LINKS = [
   { label: "Tonight's Menu", href: "#projects" },
@@ -14,6 +14,9 @@ const SiteNav = () => {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string>("");
   const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.2 });
+  const scaleX: MotionValue<number> = reduce ? scrollYProgress : smoothProgress;
 
   useEffect(() => {
     const elements = SECTION_IDS
@@ -181,6 +184,20 @@ const SiteNav = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <motion.div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          transformOrigin: "0% 50%",
+          backgroundColor: "var(--accent)",
+          scaleX,
+        }}
+      />
     </header>
   );
 };

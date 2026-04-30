@@ -1,11 +1,24 @@
+import { motion, useReducedMotion } from "framer-motion";
 import KitchenCard from "@/components/KitchenCard";
 
+const EASE = [0.22, 1, 0.36, 1] as const;
+
 const ExperienceSection = () => {
+  const reduce = useReducedMotion();
+
   return (
     <section id="experience" className="py-20">
       <div className="container-x">
-        <p className="section-label mb-3">Where I've Cooked</p>
-        <h2
+        <motion.p
+          className="section-label mb-3"
+          initial={reduce ? false : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5, ease: EASE }}
+        >
+          Where I've Cooked
+        </motion.p>
+        <motion.h2
           className="font-display pb-3 mb-10"
           style={{
             color: "var(--text)",
@@ -13,9 +26,13 @@ const ExperienceSection = () => {
             fontSize: "2rem",
             borderBottom: "2px solid var(--border)",
           }}
+          initial={reduce ? false : { opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.08, ease: EASE }}
         >
           Experience
-        </h2>
+        </motion.h2>
 
         <KitchenCard
           company="Go Optimal"

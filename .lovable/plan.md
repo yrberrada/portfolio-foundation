@@ -1,57 +1,48 @@
-# Prompt B — Animation & Hover System
+# Prompt C — Polish & Missing Animations
 
-Consolidate ad-hoc DOM mutations into Framer Motion variants, fix KitchenCard accent-bar timing, and add proper enter/exit animation to the mobile nav dropdown.
+Add scroll-tied progress bar to the nav, animate the "Where I've Cooked" and "Tonight's Menu" section headers on enter, and clean up the Hero CTA hovers to use Framer instead of imperative DOM mutation.
 
-## 1. `src/components/RecipeCard.tsx` — Hover via Framer variants
+## 1. `src/components/layout/SiteNav.tsx` — Scroll progress bar
 
-**Current:** Hover does two things — `whileHover={{ scale: 1.015 }}` (Framer) AND `onMouseEnter/Leave` directly mutating `borderColor`. Mixing imperative DOM mutation with Framer transforms causes jank and isn't reduced-motion aware for the border.
+- Import `useScroll`, `useSpring` from `framer-motion`.
+- Inside `SiteNav`: `const { scrollYProgress } = useScroll();` and `const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.2 });` (skip the spring if `useReducedMotion()` returns true — bind `scaleX` directly to `scrollYProgress`).
+- Render a 2px-tall `<motion.div>` at the bottom edge of the sticky `<header>`:
+  - `position: absolute; bottom: 0; left: 0; right: 0; height: 2px; transformOrigin: 0% 50%; backgroundColor: var(--accent);`
+  - `style={{ scaleX }}`
+  - `aria-hidden="true"`
+- Place it as the last child of the `<header>` (after the `<AnimatePresence>` block) so it sits visually beneath the nav row but above content.
 
-**Fix:**
-- Replace `onMouseEnter`/`onMouseLeave` with Framer `variants` + `whileHover`.
-- Define `cardVariants = { rest: { scale: 1, borderColor: "var(--border)" }, hover: { scale: 1.015, borderColor: "var(--border-warm)" } }`.
-- Set `initial="rest"`, `whileHover={reduce ? undefined : "hover"}`, `transition={{ duration: 0.2, ease: "easeOut" }}`.
-- Remove inline `borderColor` from `style` (variants own it). Keep border width/style on the element.
-- Drop the redundant `transition-colors` Tailwind class.
+## 2. `src/components/sections/ExperienceSection.tsx` — Header enter animation
 
-## 2. `src/components/PantryCard.tsx` — Hover via Framer variants
+- Convert the section-label `<p>` and the H2 to `motion.p` / `motion.h2`.
+- Wrap them in a `motion.div` with `variants` and `staggerChildren`, OR give each its own `whileInView`:
+  - Pattern (matches site): `initial={reduce ? false : { opacity: 0, y: 16 }}`, `whileInView={{ opacity: 1, y: 0 }}`, `viewport={{ once: true, amount: 0.4 }}`, `transition={{ duration: 0.5, ease: EASE }}` for the label, and `delay: 0.08` for the H2.
+- Add `import { motion, useReducedMotion } from "framer-motion";` and the shared `EASE = [0.22, 1, 0.36, 1] as const;`.
 
-**Current:** Same pattern — imperative `onMouseEnter/Leave` swapping `borderColor`.
+## 3. `src/components/sections/ProjectsSection.tsx` — Header enter animation
 
-**Fix:**
-- Add `whileHover` with a variants object: `{ rest: { borderColor: "var(--border)", y: 0 }, hover: { borderColor: "var(--border-warm)", y: -2 } }`.
-- Subtle 2px lift on hover for parity with RecipeCard's scale, gated by `reduce`.
-- Remove the imperative handlers and the `transition-colors` class.
+- Same treatment as ExperienceSection: animate the section-label, the H2, and the descriptive paragraph below the H2 with the same variants pattern and a small staggered delay (0, 0.08, 0.14).
+- Add the framer-motion import + `EASE` constant.
+- Keep `RecipeCard` children untouched — they already self-animate via `whileInView` with their own index-based delay.
 
-## 3. `src/components/KitchenCard.tsx` — Accent bar delay
+## 4. `src/components/sections/HeroSection.tsx` — CTA hover cleanup
 
-**Current:** The vertical accent bar uses its own `whileInView` with `viewport={{ amount: 0.2 }}`, which can fire before the parent article's enter animation completes — the bar appears before the card content settles, looking out of sync.
-
-**Fix:**
-- Drive the accent bar from the parent's animation orchestration using `variants`:
-  - Parent variants: `{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE, when: "beforeChildren", staggerChildren: 0.1 } } }`.
-  - Bar variants: `{ hidden: { scaleY: 0 }, show: { scaleY: 1, transition: { duration: 0.4, ease: "easeOut", delay: 0.15 } } }`.
-- Parent uses `initial="hidden"`, `whileInView="show"`, `viewport={{ once: true, amount: 0.2 }}`. Bar uses `variants={barVariants}` only — no own `whileInView`.
-- This guarantees the bar grows after the card has faded/translated in.
-
-## 4. `src/components/layout/SiteNav.tsx` — Mobile nav AnimatePresence
-
-**Current:** The mobile dropdown is `{open && <div>...</div>}` — pops in/out instantly with no exit animation. Feels broken next to the rest of the site.
-
-**Fix:**
-- Wrap the dropdown in `<AnimatePresence>` and convert the `<div>` to `<motion.div>`.
-- Variants: `initial={{ opacity: 0, y: -8 }}`, `animate={{ opacity: 1, y: 0 }}`, `exit={{ opacity: 0, y: -8 }}`, `transition={{ duration: 0.2, ease: "easeOut" }}`.
-- Respect `useReducedMotion()` — if reduced, skip the y translate (opacity only) or use `initial={false}`.
-- Hamburger icon: animate the three bars to a subtle "X" hint by rotating top/bottom bars when `open` (top: rotate 45deg + translateY ~8px; middle: opacity 0; bottom: rotate -45deg + translateY -8px). Use Framer `animate` props on each `motion.span`. Keep reduced-motion aware (snap, no transition).
+- Remove the `onMouseEnter`/`onMouseLeave` handlers on both CTAs.
+- Convert both `<a>` tags to `motion.a` and use `whileHover` with a `backgroundColor` (and for the secondary CTA, `borderColor`) target.
+  - Primary "See the Menu": rest `backgroundColor: "rgb(216, 110, 51)"` (var(--accent) literal — see note); hover `backgroundColor: "rgb(194, 90, 38)"`. Use `transition={{ duration: 0.2, ease: "easeOut" }}`.
+  - Secondary "Download Recipe": rest `backgroundColor: "rgba(0,0,0,0)"`; hover `backgroundColor: "rgba(255,255,255,0.04)"` (matches `--bg-raised` brightness).
+- Gate hover with `reduce ? undefined : {...}`. Drop the `transition-colors` Tailwind class (Framer owns it now).
+- **Color literal note:** Framer cannot animate CSS `var(--…)`. Read the actual values from `src/index.css` for `--accent`, `#c25a26`, `--bg-raised`, and inline them as literal `rgb()/rgba()` strings so the animation works. Confirm exact values before editing.
 
 ## Out of scope
 
-- No design token, content, copy, or layout changes.
-- No changes to other section files or `Index.tsx`.
-- No changes to the desktop nav active-underline behavior.
+- No changes to other sections, design tokens, content, or copy.
+- No changes to RecipeCard / KitchenCard / PantryCard internals.
+- No new sections.
 
 ## Files touched
 
-- `src/components/RecipeCard.tsx`
-- `src/components/PantryCard.tsx`
-- `src/components/KitchenCard.tsx`
 - `src/components/layout/SiteNav.tsx`
+- `src/components/sections/ExperienceSection.tsx`
+- `src/components/sections/ProjectsSection.tsx`
+- `src/components/sections/HeroSection.tsx`
