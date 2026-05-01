@@ -1,13 +1,9 @@
 ## Goal
 
-Replace the downloadable resume served by the "Download Recipe" button on the hero with the newly uploaded `Yassine_resume-2.pdf`.
+Replace `public/resume.pdf` with the newly uploaded `yassine_resume.pdf` so the hero "Download Recipe" CTA serves the correct file.
 
 ## Change
 
-- Copy `user-uploads://Yassine_resume-2.pdf` → `public/resume.pdf` (overwrite).
+- Overwrite `public/resume.pdf` with `user-uploads://yassine_resume.pdf`.
 
-That's it. The hero CTA already points to `/resume.pdf`, so no code changes are needed.
-
-## Out of scope
-
-- No site content updates (hero bio, experience, projects, skills) — this is just swapping the downloadable file.
+No code changes — the link in `HeroSection.tsx` already points to `/resume.pdf`.
