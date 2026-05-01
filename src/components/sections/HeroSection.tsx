@@ -55,9 +55,10 @@ const HeroSection = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
           >
-            I build production systems end-to-end — from database schema and API design
-            to the interface clients actually use. Currently building at Go Optimal,
-            shipping real products for real clients.
+            Full-stack developer with a B.S. in Computer Science, building production
+            systems end-to-end — from database schema and RLS design to pixel-accurate UI.
+            Currently building at Go Optimal, shipping real products for real clients.
+            Authorized to work in the U.S. under OPT.
           </motion.p>
 
           <motion.div
