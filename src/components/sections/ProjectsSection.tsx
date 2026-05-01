@@ -8,12 +8,17 @@ interface Project {
   serves: string;
   tech: string[];
   links?: { github?: string; live?: string };
+  image?: string;
+  featured?: boolean;
 }
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const ProjectsSection = () => {
-  const items = projects as Project[];
+  // Featured items render first so the showcase sits at the top.
+  const items = [...(projects as Project[])].sort((a, b) => {
+    return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+  });
   const reduce = useReducedMotion();
 
   return (
