@@ -114,11 +114,43 @@ const HeroSection = () => {
           initial={initial({ opacity: 0 })}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-          aria-hidden="true"
         >
           <Suspense fallback={null}>
             <PlateConveyor />
           </Suspense>
+
+          {/* Overlay CTA */}
+          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
+            <motion.div
+              className="flex flex-col items-center text-center px-8 py-6"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 70%)",
+              }}
+              initial={initial({ opacity: 0, y: 12 })}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
+            >
+              <p className="section-label" style={{ color: "var(--text-muted)" }}>
+                Tonight's Tasting
+              </p>
+              <motion.a
+                href="#projects"
+                className="pointer-events-auto font-sans mt-4 px-7 py-3"
+                style={{
+                  backgroundColor: "#d4622a",
+                  color: "#ffffff",
+                  borderRadius: "var(--radius-sm)",
+                  fontWeight: 500,
+                  boxShadow: "0 10px 30px -10px rgba(0,0,0,0.5)",
+                }}
+                whileHover={reduce ? undefined : { backgroundColor: "#c25a26", y: -2 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                View Tonight's Menu
+              </motion.a>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
