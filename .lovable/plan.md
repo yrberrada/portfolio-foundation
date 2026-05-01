@@ -1,76 +1,78 @@
-# Prompt E — Rhythm & Footer
+## Audit reconciliation
 
-Two related polish fixes: break the monotonous `py-20` rhythm across every section, and turn the bare-bones footer into a proper sitemap-style nav with section links and socials.
+Two items from the audit are already implemented and should be skipped:
 
-## 1. Vertical rhythm — vary section spacing
+- **#5 scroll progress bar** — already present in `SiteNav.tsx` (animated `scaleX` bar on the bottom edge of the header).
+- **#10 dead footer** — already rebuilt into a 3-column sitemap (Brand / Navigate / Elsewhere) in Prompt E.
 
-Right now every section uses identical `py-20` (80px top + bottom). The page reads as one long uniform stripe — there's no visual hierarchy between "headline" sections (Experience, Projects) and "supporting" sections (Skills, Education).
+**#7 uniform spacing** is partially done (major vs. supporting sections now differ). Leaving as-is unless we want a further pass.
 
-**Approach:** introduce a subtle 3-tier rhythm using only Tailwind spacing utilities (no new tokens), with the major content sections breathing more than the supporting ones, and a tighter transition into the footer.
+The remaining 6 issues will be tackled in 4 prompts, ordered by impact.
 
-| Section          | Current        | New                                |
-| ---------------- | -------------- | ---------------------------------- |
-| Hero             | `py-20 lg:py-24` | unchanged (already custom)        |
-| Experience       | `py-20`        | `pt-28 pb-20 md:pt-32 md:pb-24`   |
-| Projects         | `py-20`        | `pt-20 pb-28 md:pt-24 md:pb-32`   |
-| Skills           | `py-20`        | `py-16 md:py-20`                  |
-| Education        | `py-20`        | `py-16 md:py-20`                  |
-| Contact          | `py-20`        | `pt-28 pb-20 md:pt-36 md:pb-24`   |
-| `SectionShell` default | `py-20`  | `py-20 md:py-24` (kept moderate, since it's the fallback) |
+---
 
-Rationale: Experience/Projects/Contact get extra top breathing room so they read as anchor moments; Skills/Education tighten up so they feel like a paired "facts" block between the two big content slabs. Nothing changes horizontally.
+## Prompt F — Critical credibility fixes (live-issue triage)
 
-**Files:**
-- `src/components/sections/ExperienceSection.tsx` (line 10)
-- `src/components/sections/ProjectsSection.tsx` (line 20)
-- `src/components/sections/SkillsSection.tsx` (line 13)
-- `src/components/sections/EducationSection.tsx` (line 17)
-- `src/components/sections/ContactSection.tsx` (line 28)
-- `src/components/sections/SectionShell.tsx` (line 12)
+Two one-line fixes that are actively damaging perception, plus the footer attribution.
 
-## 2. Footer — add nav links
+**Touches:** `index.html`, `src/components/sections/HeroSection.tsx`, `src/components/layout/SiteFooter.tsx`
 
-Current footer is a single line: `© 2026 ... · email`. Replace with a small three-column-on-desktop / stacked-on-mobile layout:
+1. **Canonical + OG URL → production domain.** In `index.html`, swap the preview URL in `<link rel="canonical">` and `<meta property="og:url">` for `https://yassineberradadev.com`. Remove the "TODO replace" comments.
+2. **De-cute the hero bio.** In `HeroSection.tsx`, change "Currently cooking at Go Optimal, shipping real products for real clients." to "Currently building at Go Optimal, shipping real products for real clients." The cooking metaphor stays in section labels and ambient text only.
+3. **Drop the build-tool brag.** In `SiteFooter.tsx`, remove the "Built with React + TypeScript" line from the bottom strip. Leave the copyright line on its own (centered on mobile, left-aligned on desktop).
 
-```text
-┌────────────────────────────────────────────────────────────────────┐
-│  Yassine Berrada Rekhami        Navigate          Elsewhere       │
-│  Full-stack developer.          Experience        Email           │
-│  Cooking software end-to-end.   Projects          LinkedIn ↗      │
-│                                 Skills            GitHub  ↗       │
-│                                 Education                          │
-│                                 Contact                            │
-├────────────────────────────────────────────────────────────────────┤
-│  © 2026 Yassine Berrada Rekhami       Built in React + TypeScript │
-└────────────────────────────────────────────────────────────────────┘
-```
+---
 
-**Details:**
-- Wrapper keeps `border-top: 1px solid var(--border)`; outer padding becomes `pt-16 pb-10` (so it pairs with the new section rhythm).
-- Three columns via `grid grid-cols-1 md:grid-cols-3 gap-10`.
-  - **Brand column:** name in `font-display`, single tagline in `var(--text-dim)`.
-  - **Navigate column:** small heading "Navigate" in `section-label` style, then anchor links to `#experience`, `#projects`, `#skills`, `#education`, `#contact` — same hover pattern (dim → `var(--accent-warm)`).
-  - **Elsewhere column:** heading "Elsewhere", then `mailto:yrberrada@gmail.com`, LinkedIn, GitHub — reuse the exact URLs already in `ContactSection.tsx` (lines 78–80) so there's a single source of truth visually, even if duplicated literally.
-- Bottom strip: `border-top` + `mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-2` with the © line on the left and a small "Built with React + TypeScript" credit on the right, both in `text-dim` `0.75rem`.
-- All anchor links get `transition: color 200ms` and the same hover-color swap already used for the email link.
-- External links keep the `↗` glyph and `target="_blank" rel="noopener noreferrer"`.
-- No new images, no new fonts, no new tokens.
+## Prompt G — Project visuals (highest-impact design upgrade)
 
-**File:** `src/components/layout/SiteFooter.tsx` (full rewrite — it's only 22 lines).
+Add screenshot/preview imagery to each `RecipeCard` so the projects section becomes a showcase instead of a list.
 
-## Out of scope
+**Touches:** `src/components/RecipeCard.tsx`, `src/content/projects.json`, `public/projects/*` (new images)
 
-- No changes to nav, hero, or card components.
-- No new color tokens.
-- Not extracting a shared `socialLinks` constant (could be a follow-up; for now duplication is fine).
-- Not adding a back-to-top button.
+1. **Schema:** add an optional `image` field to each entry in `projects.json` (path like `/projects/pulse.webp`). Keep it optional so cards without an image still render gracefully.
+2. **Card layout:** in `RecipeCard.tsx`, render the image at the top of the card when present — full-width, fixed aspect ratio (16:10), `object-cover`, rounded top corners matching the card radius, with a subtle inner border on the bottom edge to separate it from the text block. Lazy-load (`loading="lazy"`, `decoding="async"`).
+3. **Hover treatment:** on card hover, gently scale the image (1.02) inside `overflow-hidden`, behind the existing border-color hover. Disabled when `prefers-reduced-motion`.
+4. **Placeholder strategy:** since we don't have screenshots yet, ship the schema + rendering and leave `image` empty for all six entries. Add a TODO comment in `projects.json` listing the recommended next step (drop a 1200×750 WebP into `/public/projects/` and reference it). Cards without an image fall back to the current text-only layout — no broken UI.
 
-## Files touched
+This way the infrastructure ships now and the user can drop in screenshots without another code change.
 
-- `src/components/sections/ExperienceSection.tsx`
-- `src/components/sections/ProjectsSection.tsx`
-- `src/components/sections/SkillsSection.tsx`
-- `src/components/sections/EducationSection.tsx`
-- `src/components/sections/ContactSection.tsx`
-- `src/components/sections/SectionShell.tsx`
-- `src/components/layout/SiteFooter.tsx`
+---
+
+## Prompt H — Project hierarchy (visual weight)
+
+Make Pulse and Symphony Operations (the headline client work) read as featured, and demote the smaller projects.
+
+**Touches:** `src/components/sections/ProjectsSection.tsx`, `src/content/projects.json`, `src/components/RecipeCard.tsx`
+
+1. **Schema:** add an optional `featured: true` flag in `projects.json`. Mark Pulse and Symphony as featured.
+2. **Grid:** switch the projects grid to a 6-column grid on `lg`. Featured cards span 3 columns (so two per row); non-featured span 2 columns (three per row). On `sm` keep the current 2-col, on mobile single column. This preserves a clean rhythm without random-looking sizes.
+3. **Card emphasis:** when `featured`, `RecipeCard` gets a slightly larger title (`1.25rem` vs `1.1rem`), an "Featured" eyebrow label in the accent-warm color above the title, and a marginally brighter border (`rgba(232,164,74,0.12)` resting). Hover treatment unchanged.
+4. **Order:** ensure featured items render first regardless of source order, so the showcase sits at the top.
+
+---
+
+## Prompt I — Contact form success state
+
+Wire a real submit handler so the form gives feedback even if Formspree isn't configured yet.
+
+**Touches:** `src/components/sections/ContactSection.tsx`
+
+1. **State machine:** convert the form to a controlled component with `status: "idle" | "submitting" | "success" | "error"`.
+2. **Submit handler:** on submit, `preventDefault`, set `submitting`, then `fetch` the Formspree URL with JSON body and `Accept: application/json`. On 2xx → `success`; otherwise → `error`. If the form ID is still the literal `YOUR_FORM_ID` placeholder, short-circuit to `success` after a 600 ms delay so the UX can be reviewed before Formspree is wired (and log a `console.warn` so it's obvious in dev).
+3. **Success UI:** replace the form with a centered confirmation block — small accent-warm check glyph, headline "Order received", body "I'll get back to you within a day or two.", and a ghost button "Send another" that resets `status` to `idle`. Animate in with the same `EASE` curve used elsewhere (opacity + 8 px y).
+4. **Error UI:** keep the form visible, show a small line of `text-warm` copy above the submit button: "Something went wrong — try emailing yrberrada@gmail.com directly." with a mailto link.
+5. **Submit button:** while `submitting`, disable it and swap the label to "Sending…".
+6. **Bonus:** drop the `# TODO Replace YOUR_FORM_ID` comment into a clearer `// TODO` near the constant so it's obvious where to wire the real ID.
+
+---
+
+## Skipped / deferred
+
+- **#9 458 KB bundle.** Real but low ROI for a portfolio. Would require auditing which shadcn components are actually used (most aren't on the public page), removing unused ones, and verifying nothing breaks. Worth doing later as a dedicated cleanup prompt if Lighthouse scores matter — not now.
+- **#7 spacing rhythm refinement.** Already addressed in Prompt E. Could do a finer pass later if desired.
+
+---
+
+## Suggested execution order
+
+Run **F** first (live issues, ~5 min). Then **G** and **H** together since they touch overlapping files (`RecipeCard.tsx`, `projects.json`) and share a theme. Then **I** to close the loop on the contact form.
