@@ -1,4 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
+import { Suspense, lazy } from "react";
+
+const PlateConveyor = lazy(() => import("@/components/hero/PlateConveyor"));
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -113,17 +116,9 @@ const HeroSection = () => {
           transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
           aria-hidden="true"
         >
-          <span
-            className="pointer-events-none select-none absolute inset-0 flex items-center justify-center font-display italic whitespace-nowrap"
-            style={{
-              color: "var(--text-dim)",
-              opacity: 0.04,
-              fontSize: "clamp(6rem, 12vw, 14rem)",
-              lineHeight: 1,
-            }}
-          >
-            mise en place
-          </span>
+          <Suspense fallback={null}>
+            <PlateConveyor />
+          </Suspense>
         </motion.div>
       </div>
     </section>
