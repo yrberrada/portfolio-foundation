@@ -1,7 +1,7 @@
 [
   {
     "title": "Pulse — Project Intelligence",
-    "tagline": "Internal Gantt platform for the Optimal team. Multi-view timeline, drag-and-drop persistence, Google OAuth with RLS.",
+    "tagline": "Internal Gantt platform for the Optimal team. Multi-view timeline (Week/Month/Day/Sprint/Agenda), drag-and-drop persistence, Google OAuth with RLS.",
     "serves": "3 engineers, daily",
     "tech": ["React", "TypeScript", "Supabase", "PostgreSQL", "Tailwind"],
     "links": { "github": "" },
@@ -27,9 +27,17 @@
   },
   {
     "title": "Full-Stack Intranet Platform",
-    "tagline": "End-to-end intranet with RBAC, 14+ normalized DB models, NextAuth, and reusable component library.",
+    "tagline": "End-to-end intranet with 14+ normalized models, 40% query-complexity reduction, NextAuth RBAC (admin/manager/staff), and a reusable Tailwind component library.",
     "serves": "Multi-department org",
     "tech": ["Next.js", "TypeScript", "Prisma", "PostgreSQL"],
+    "links": { "github": "" },
+    "image": ""
+  },
+  {
+    "title": "AI Interactive Narrative Engine",
+    "tagline": "Next.js engine adapting tone and emotional state via LLM prompts. Scene-tree state machine with persistent state and branching dialogue.",
+    "serves": "Interactive fiction prototype",
+    "tech": ["Next.js", "TypeScript", "LLM"],
     "links": { "github": "" },
     "image": ""
   },
@@ -47,6 +55,14 @@
     "serves": "Sports analytics",
     "tech": ["MongoDB", "Schema Design", "Indexing"],
     "links": { "github": "https://github.com/yrberrada/-IMDB-Data-Converter" },
+    "image": ""
+  },
+  {
+    "title": "Solar Wind Data Parser (C++)",
+    "tagline": "Parser for 1M+ NASA dataset entries. 40% query-time reduction via modular C++ OOP design (SOLID, factory patterns).",
+    "serves": "NASA dataset analysis",
+    "tech": ["C++", "OOP", "SOLID"],
+    "links": { "github": "" },
     "image": ""
   }
 ]

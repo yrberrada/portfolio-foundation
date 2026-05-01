@@ -1,78 +1,73 @@
-## Audit reconciliation
+## Goal
 
-Two items from the audit are already implemented and should be skipped:
+Reconcile the live site content with the latest resume (`Yassine_resume.pdf`). The design system, layouts, and all Prompts A–I work stay untouched — this is a content-only pass.
 
-- **#5 scroll progress bar** — already present in `SiteNav.tsx` (animated `scaleX` bar on the bottom edge of the header).
-- **#10 dead footer** — already rebuilt into a 3-column sitemap (Brand / Navigate / Elsewhere) in Prompt E.
+## Diff: resume vs. current site
 
-**#7 uniform spacing** is partially done (major vs. supporting sections now differ). Leaving as-is unless we want a further pass.
+**New on resume, missing from site:**
+- Second experience entry: **University of Minnesota Duluth — STEM Tutor** (Apr 2021 – Nov 2022).
+- New project: **AI Interactive Narrative Engine** (Next.js, scene-tree state machine, LLM tone adaptation).
+- New project: **Solar Wind Data Parser (C++)** — 1M+ NASA dataset entries, 40% query-time reduction.
+- Updated summary line: explicit mention of "B.S. in Computer Science" and "Authorized to work in the U.S. under OPT."
+- Skills additions: **C#, Kotlin**, **.NET / ASP.NET Core**, **Flutter**, **Android (Kotlin/Dart)**, **Azure**, **VS Code**, **Schema Design**, **Prompt Engineering**, **Technical Documentation (MAD/PRD/TAD)**.
+- Pulse multi-view detail: list views explicitly (Week/Month/Day/Sprint/Agenda).
+- Symphony on-site go-live framed as separate bullet (3-day on-site, 14 dept. leads through UAT, MAD v3.0 40+ pages).
 
-The remaining 6 issues will be tackled in 4 prompts, ordered by impact.
+**On site, not on resume — keep as-is:**
+- "Currently building at Go Optimal, shipping real products for real clients." (hero tagline — site voice).
+- Cooking-metaphor section labels.
 
----
+## Changes
 
-## Prompt F — Critical credibility fixes (live-issue triage)
+### 1. `src/components/sections/HeroSection.tsx`
+Update the bio paragraph to lead with the credential + OPT line from the resume summary, while keeping the cooking-free site voice:
 
-Two one-line fixes that are actively damaging perception, plus the footer attribution.
+> "Full-stack developer with a B.S. in Computer Science, building production systems end-to-end — from database schema and RLS design to pixel-accurate UI. Currently building at Go Optimal, shipping real products for real clients. Authorized to work in the U.S. under OPT."
 
-**Touches:** `index.html`, `src/components/sections/HeroSection.tsx`, `src/components/layout/SiteFooter.tsx`
+### 2. `src/components/sections/ExperienceSection.tsx`
+- Update the **Go Optimal** Pulse bullet to include the explicit view list: "multi-view timeline (Week/Month/Day/Sprint/Agenda)…".
+- Split the Symphony work into two bullets to match the resume: (a) co-architecture + 9-endpoint API, (b) the 3-day on-site go-live + MAD v3.0 (40+ pages) supporting 14 dept. leads through UAT.
+- Keep the TGI bullet, expand to match resume wording (G45X 6-week drip-lock; Beginnings 30 lessons / 3 books).
+- Keep the diagnostic/fix bullet (already matches resume).
+- Add a **second `KitchenCard`** below Go Optimal:
+  - Company: "University of Minnesota Duluth"
+  - Role: "STEM Tutor"
+  - Stack: "Mathematics · Statistics · Physics · Chemistry"
+  - Period: "Apr 2021 – Nov 2022"
+  - Bullets: the two from the resume (3–4 hrs/week + SSP 3003 training; communicating technical concepts to non-technical audiences).
 
-1. **Canonical + OG URL → production domain.** In `index.html`, swap the preview URL in `<link rel="canonical">` and `<meta property="og:url">` for `https://yassineberradadev.com`. Remove the "TODO replace" comments.
-2. **De-cute the hero bio.** In `HeroSection.tsx`, change "Currently cooking at Go Optimal, shipping real products for real clients." to "Currently building at Go Optimal, shipping real products for real clients." The cooking metaphor stays in section labels and ambient text only.
-3. **Drop the build-tool brag.** In `SiteFooter.tsx`, remove the "Built with React + TypeScript" line from the bottom strip. Leave the copyright line on its own (centered on mobile, left-aligned on desktop).
+### 3. `src/content/projects.json`
+Reorder and rewrite to match the resume's project list, while preserving the `featured` flag on Pulse and Symphony (which stay top items in the Experience-driven projects section). The resume "Projects" list maps to the non-Go-Optimal cards. Final entries (in render order):
 
----
+1. Pulse — Project Intelligence (`featured: true`, keep)
+2. Symphony Operations (`featured: true`, keep)
+3. TGI Progressions Builder (keep)
+4. Full-Stack Intranet Platform (keep, refresh tagline to mention 14+ models, 40% query-complexity reduction, NextAuth RBAC admin/manager/staff)
+5. **AI Interactive Narrative Engine** (NEW) — tagline: "Next.js engine adapting tone via LLM prompts. Scene-tree state machine with persistent state and branching dialogue." Tech: Next.js, TypeScript, LLM. `serves`: "Interactive fiction prototype". `image: ""`.
+6. JobFlow Notion Sync API (keep)
+7. Baseball Player Database (keep)
+8. **Solar Wind Data Parser (C++)** (NEW) — tagline: "Parser for 1M+ NASA dataset entries. 40% query-time reduction via modular C++ OOP (SOLID, factory patterns)." Tech: C++, OOP, SOLID. `serves`: "NASA dataset analysis". `image: ""`.
 
-## Prompt G — Project visuals (highest-impact design upgrade)
+All new entries get `image: ""` (consistent with the placeholder strategy from Prompt G) and no `featured` flag.
 
-Add screenshot/preview imagery to each `RecipeCard` so the projects section becomes a showcase instead of a list.
+### 4. `src/content/skills.json`
+Update each group to match the resume's broader stack:
 
-**Touches:** `src/components/RecipeCard.tsx`, `src/content/projects.json`, `public/projects/*` (new images)
+- **Languages:** Go, Java, JavaScript, TypeScript, Python, C++, C#, SQL, Dart, Kotlin
+- **Frontend & UI:** React, Next.js, Tailwind CSS, Framer Motion, Flutter, Android (Kotlin/Dart), Lovable
+- **Backend & APIs:** Node.js, FastAPI, REST APIs, .NET / ASP.NET Core, Prisma ORM, NextAuth, Express.js, Supabase Edge Functions
+- **Databases:** PostgreSQL, Supabase (RLS), SQLite, MongoDB, Firestore, Schema Design
+- **Tools & Platforms:** Git, GitHub, Unix/Linux, VS Code, Firebase, AWS (S3/IAM), Azure, Vercel, Figma, Lovable
+- **Practices:** Agile/Scrum, Technical Documentation (MAD/PRD/TAD), Stakeholder Management, AI-assisted Development, Prompt Engineering
 
-1. **Schema:** add an optional `image` field to each entry in `projects.json` (path like `/projects/pulse.webp`). Keep it optional so cards without an image still render gracefully.
-2. **Card layout:** in `RecipeCard.tsx`, render the image at the top of the card when present — full-width, fixed aspect ratio (16:10), `object-cover`, rounded top corners matching the card radius, with a subtle inner border on the bottom edge to separate it from the text block. Lazy-load (`loading="lazy"`, `decoding="async"`).
-3. **Hover treatment:** on card hover, gently scale the image (1.02) inside `overflow-hidden`, behind the existing border-color hover. Disabled when `prefers-reduced-motion`.
-4. **Placeholder strategy:** since we don't have screenshots yet, ship the schema + rendering and leave `image` empty for all six entries. Add a TODO comment in `projects.json` listing the recommended next step (drop a 1200×750 WebP into `/public/projects/` and reference it). Cards without an image fall back to the current text-only layout — no broken UI.
+### 5. `src/components/sections/EducationSection.tsx`
+No structural change. Coursework list already matches the resume (Operating Systems, DBMS, AI, Computer Architecture, Computer Security). Leave as-is.
 
-This way the infrastructure ships now and the user can drop in screenshots without another code change.
+### 6. `public/resume.pdf`
+Replace with the freshly uploaded `Yassine_resume.pdf` so the "Download Recipe" button serves the latest version.
 
----
+## Out of scope
 
-## Prompt H — Project hierarchy (visual weight)
-
-Make Pulse and Symphony Operations (the headline client work) read as featured, and demote the smaller projects.
-
-**Touches:** `src/components/sections/ProjectsSection.tsx`, `src/content/projects.json`, `src/components/RecipeCard.tsx`
-
-1. **Schema:** add an optional `featured: true` flag in `projects.json`. Mark Pulse and Symphony as featured.
-2. **Grid:** switch the projects grid to a 6-column grid on `lg`. Featured cards span 3 columns (so two per row); non-featured span 2 columns (three per row). On `sm` keep the current 2-col, on mobile single column. This preserves a clean rhythm without random-looking sizes.
-3. **Card emphasis:** when `featured`, `RecipeCard` gets a slightly larger title (`1.25rem` vs `1.1rem`), an "Featured" eyebrow label in the accent-warm color above the title, and a marginally brighter border (`rgba(232,164,74,0.12)` resting). Hover treatment unchanged.
-4. **Order:** ensure featured items render first regardless of source order, so the showcase sits at the top.
-
----
-
-## Prompt I — Contact form success state
-
-Wire a real submit handler so the form gives feedback even if Formspree isn't configured yet.
-
-**Touches:** `src/components/sections/ContactSection.tsx`
-
-1. **State machine:** convert the form to a controlled component with `status: "idle" | "submitting" | "success" | "error"`.
-2. **Submit handler:** on submit, `preventDefault`, set `submitting`, then `fetch` the Formspree URL with JSON body and `Accept: application/json`. On 2xx → `success`; otherwise → `error`. If the form ID is still the literal `YOUR_FORM_ID` placeholder, short-circuit to `success` after a 600 ms delay so the UX can be reviewed before Formspree is wired (and log a `console.warn` so it's obvious in dev).
-3. **Success UI:** replace the form with a centered confirmation block — small accent-warm check glyph, headline "Order received", body "I'll get back to you within a day or two.", and a ghost button "Send another" that resets `status` to `idle`. Animate in with the same `EASE` curve used elsewhere (opacity + 8 px y).
-4. **Error UI:** keep the form visible, show a small line of `text-warm` copy above the submit button: "Something went wrong — try emailing yrberrada@gmail.com directly." with a mailto link.
-5. **Submit button:** while `submitting`, disable it and swap the label to "Sending…".
-6. **Bonus:** drop the `# TODO Replace YOUR_FORM_ID` comment into a clearer `// TODO` near the constant so it's obvious where to wire the real ID.
-
----
-
-## Skipped / deferred
-
-- **#9 458 KB bundle.** Real but low ROI for a portfolio. Would require auditing which shadcn components are actually used (most aren't on the public page), removing unused ones, and verifying nothing breaks. Worth doing later as a dedicated cleanup prompt if Lighthouse scores matter — not now.
-- **#7 spacing rhythm refinement.** Already addressed in Prompt E. Could do a finer pass later if desired.
-
----
-
-## Suggested execution order
-
-Run **F** first (live issues, ~5 min). Then **G** and **H** together since they touch overlapping files (`RecipeCard.tsx`, `projects.json`) and share a theme. Then **I** to close the loop on the contact form.
+- No design, layout, animation, or component-API changes.
+- No edits to `index.html`, footer, contact form, or nav.
+- No new project images yet (`image: ""` placeholders kept per Prompt G).
