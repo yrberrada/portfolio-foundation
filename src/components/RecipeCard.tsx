@@ -37,7 +37,7 @@ const RecipeCard = ({
 
   return (
     <motion.article
-      className="group relative overflow-hidden flex flex-col"
+      className="group relative overflow-hidden flex flex-col h-full"
       style={{
         background:
           "linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-raised) 100%)",

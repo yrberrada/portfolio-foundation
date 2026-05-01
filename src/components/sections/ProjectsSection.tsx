@@ -59,14 +59,15 @@ const ProjectsSection = () => {
           A selection of work shipped for real clients and real teams.
         </motion.p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 items-stretch">
           {items.map((p, i) => (
             <div
               key={p.title}
               className={
-                p.featured
+                "h-full " +
+                (p.featured
                   ? "sm:col-span-2 lg:col-span-3"
-                  : "sm:col-span-1 lg:col-span-2"
+                  : "sm:col-span-1 lg:col-span-2")
               }
             >
               <RecipeCard
