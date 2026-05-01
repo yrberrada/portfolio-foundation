@@ -59,17 +59,27 @@ const ProjectsSection = () => {
           A selection of work shipped for real clients and real teams.
         </motion.p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5">
           {items.map((p, i) => (
-            <RecipeCard
+            <div
               key={p.title}
-              index={i}
-              title={p.title}
-              tagline={p.tagline}
-              serves={p.serves}
-              tech={p.tech}
-              links={p.links}
-            />
+              className={
+                p.featured
+                  ? "sm:col-span-2 lg:col-span-3"
+                  : "sm:col-span-1 lg:col-span-2"
+              }
+            >
+              <RecipeCard
+                index={i}
+                title={p.title}
+                tagline={p.tagline}
+                serves={p.serves}
+                tech={p.tech}
+                links={p.links}
+                image={p.image}
+                featured={p.featured}
+              />
+            </div>
           ))}
         </div>
       </div>
