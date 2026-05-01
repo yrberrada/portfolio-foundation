@@ -56,7 +56,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2, ease: EASE }}
           >
             I build production systems end-to-end — from database schema and API design
-            to the interface clients actually use. Currently cooking at Go Optimal,
+            to the interface clients actually use. Currently building at Go Optimal,
             shipping real products for real clients.
           </motion.p>
 

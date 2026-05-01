@@ -94,7 +94,7 @@ const SiteFooter = () => {
 
         {/* Bottom strip */}
         <div
-          className="mt-12 pt-6 flex flex-col md:flex-row items-center justify-between gap-2"
+          className="mt-12 pt-6 flex justify-center md:justify-start"
           style={{ borderTop: "1px solid var(--border)" }}
         >
           <p
@@ -102,12 +102,6 @@ const SiteFooter = () => {
             style={{ color: "var(--text-dim)", fontSize: "0.75rem" }}
           >
             © 2026 Yassine Berrada Rekhami
-          </p>
-          <p
-            className="font-sans"
-            style={{ color: "var(--text-dim)", fontSize: "0.75rem" }}
-          >
-            Built with React + TypeScript
           </p>
         </div>
       </div>

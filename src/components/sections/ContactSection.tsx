@@ -1,6 +1,13 @@
-import { motion, useReducedMotion } from "framer-motion";
+import { useState } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
+
+// TODO: Replace with the real Formspree form ID from formspree.io
+const FORMSPREE_FORM_ID = "YOUR_FORM_ID";
+const FORMSPREE_ENDPOINT = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
+
+type Status = "idle" | "submitting" | "success" | "error";
 
 const inputBaseStyle: React.CSSProperties = {
   width: "100%",
@@ -17,11 +24,59 @@ const ContactSection = () => {
   const reduce = useReducedMotion();
   const initial = <T extends object>(v: T): T | false => (reduce ? false : v);
 
+  const [status, setStatus] = useState<Status>("idle");
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+
   const focusOn = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = "var(--accent-warm)";
   };
   const focusOff = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.currentTarget.style.borderColor = "var(--border)";
+  };
+
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("submitting");
+
+    // Short-circuit if Formspree isn't wired yet — lets the success UX be reviewed
+    // before the real ID is in place. Remove once FORMSPREE_FORM_ID is set.
+    if (FORMSPREE_FORM_ID === "YOUR_FORM_ID") {
+      console.warn(
+        "[ContactSection] Formspree form ID is still the placeholder — not actually sending.",
+      );
+      await new Promise((r) => setTimeout(r, 600));
+      setStatus("success");
+      return;
+    }
+
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setStatus("success");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  };
+
+  const reset = () => {
+    setForm({ name: "", email: "", message: "" });
+    setStatus("idle");
   };
 
   return (
@@ -109,77 +164,173 @@ const ContactSection = () => {
             </div>
           </motion.div>
 
-          {/* RIGHT — form */}
+          {/* RIGHT — form / success */}
           <motion.div
             initial={initial({ opacity: 0, y: 20 })}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.08, ease: EASE }}
           >
-            {/* TODO: Replace YOUR_FORM_ID with actual Formspree form ID from formspree.io */}
-            <form
-              action="https://formspree.io/f/YOUR_FORM_ID"
-              method="POST"
-              className="flex flex-col gap-3"
-            >
-              {/* Honeypot */}
-              <input
-                type="text"
-                name="_gotcha"
-                className="hidden"
-                tabIndex={-1}
-                autoComplete="off"
-              />
+            <AnimatePresence mode="wait" initial={false}>
+              {status === "success" ? (
+                <motion.div
+                  key="success"
+                  className="flex flex-col items-center justify-center text-center py-10"
+                  initial={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, y: -8 }}
+                  transition={{ duration: 0.4, ease: EASE }}
+                >
+                  <div
+                    className="flex items-center justify-center mb-4"
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: "9999px",
+                      backgroundColor: "var(--accent-dim)",
+                      border: "1px solid rgba(232,164,74,0.25)",
+                      color: "var(--accent-warm)",
+                      fontSize: "1.4rem",
+                      lineHeight: 1,
+                    }}
+                    aria-hidden="true"
+                  >
+                    ✓
+                  </div>
+                  <h3
+                    className="font-display font-bold"
+                    style={{ color: "var(--text)", fontSize: "1.4rem" }}
+                  >
+                    Order received
+                  </h3>
+                  <p
+                    className="font-sans mt-2"
+                    style={{ color: "var(--text-muted)", fontSize: "0.95rem", maxWidth: "22rem" }}
+                  >
+                    I'll get back to you within a day or two.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={reset}
+                    className="font-sans mt-6 px-5 py-2 transition-colors"
+                    style={{
+                      color: "var(--text)",
+                      border: "1px solid var(--border-warm)",
+                      borderRadius: "var(--radius-sm)",
+                      backgroundColor: "transparent",
+                      fontWeight: 400,
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.04)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.backgroundColor = "transparent")
+                    }
+                  >
+                    Send another
+                  </button>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  onSubmit={handleSubmit}
+                  className="flex flex-col gap-3"
+                  initial={false}
+                  animate={{ opacity: 1 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, y: 8 }}
+                  transition={{ duration: 0.3, ease: EASE }}
+                >
+                  {/* Honeypot */}
+                  <input
+                    type="text"
+                    name="_gotcha"
+                    className="hidden"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
 
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                required
-                maxLength={100}
-                style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
-                onFocus={focusOn}
-                onBlur={focusOff}
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                required
-                maxLength={255}
-                style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
-                onFocus={focusOn}
-                onBlur={focusOff}
-              />
-              <textarea
-                name="message"
-                placeholder="What are we cooking?"
-                required
-                maxLength={1000}
-                className="h-28 resize-none"
-                style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
-                onFocus={focusOn}
-                onBlur={focusOff}
-              />
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    required
+                    maxLength={100}
+                    value={form.name}
+                    onChange={onChange}
+                    style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
+                    onFocus={focusOn}
+                    onBlur={focusOff}
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    required
+                    maxLength={255}
+                    value={form.email}
+                    onChange={onChange}
+                    style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
+                    onFocus={focusOn}
+                    onBlur={focusOff}
+                  />
+                  <textarea
+                    name="message"
+                    placeholder="What are we cooking?"
+                    required
+                    maxLength={1000}
+                    value={form.message}
+                    onChange={onChange}
+                    className="h-28 resize-none"
+                    style={{ ...inputBaseStyle, padding: "0.625rem 1rem" }}
+                    onFocus={focusOn}
+                    onBlur={focusOff}
+                  />
 
-              <button
-                type="submit"
-                className="w-full font-sans transition-colors"
-                style={{
-                  backgroundColor: "var(--accent)",
-                  color: "#ffffff",
-                  fontWeight: 500,
-                  padding: "0.75rem 0",
-                  borderRadius: "var(--radius-sm)",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#c25a26")}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "var(--accent)")}
-              >
-                Send it →
-              </button>
-            </form>
+                  {status === "error" && (
+                    <p
+                      className="font-sans"
+                      style={{ color: "var(--accent-warm)", fontSize: "0.8rem" }}
+                    >
+                      Something went wrong — try emailing{" "}
+                      <a
+                        href="mailto:yrberrada@gmail.com"
+                        style={{ color: "var(--accent-warm)", textDecoration: "underline" }}
+                      >
+                        yrberrada@gmail.com
+                      </a>{" "}
+                      directly.
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={status === "submitting"}
+                    className="w-full font-sans transition-colors"
+                    style={{
+                      backgroundColor: "var(--accent)",
+                      color: "#ffffff",
+                      fontWeight: 500,
+                      padding: "0.75rem 0",
+                      borderRadius: "var(--radius-sm)",
+                      border: "none",
+                      cursor: status === "submitting" ? "wait" : "pointer",
+                      opacity: status === "submitting" ? 0.7 : 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (status !== "submitting")
+                        e.currentTarget.style.backgroundColor = "#c25a26";
+                    }}
+                    onMouseLeave={(e) => {
+                      if (status !== "submitting")
+                        e.currentTarget.style.backgroundColor = "var(--accent)";
+                    }}
+                  >
+                    {status === "submitting" ? "Sending…" : "Send it →"}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>

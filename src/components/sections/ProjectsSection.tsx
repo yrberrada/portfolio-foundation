@@ -8,12 +8,17 @@ interface Project {
   serves: string;
   tech: string[];
   links?: { github?: string; live?: string };
+  image?: string;
+  featured?: boolean;
 }
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const ProjectsSection = () => {
-  const items = projects as Project[];
+  // Featured items render first so the showcase sits at the top.
+  const items = [...(projects as Project[])].sort((a, b) => {
+    return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+  });
   const reduce = useReducedMotion();
 
   return (
@@ -54,17 +59,28 @@ const ProjectsSection = () => {
           A selection of work shipped for real clients and real teams.
         </motion.p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-5 items-stretch">
           {items.map((p, i) => (
-            <RecipeCard
+            <div
               key={p.title}
-              index={i}
-              title={p.title}
-              tagline={p.tagline}
-              serves={p.serves}
-              tech={p.tech}
-              links={p.links}
-            />
+              className={
+                "h-full " +
+                (p.featured
+                  ? "sm:col-span-2 lg:col-span-3"
+                  : "sm:col-span-1 lg:col-span-2")
+              }
+            >
+              <RecipeCard
+                index={i}
+                title={p.title}
+                tagline={p.tagline}
+                serves={p.serves}
+                tech={p.tech}
+                links={p.links}
+                image={p.image}
+                featured={p.featured}
+              />
+            </div>
           ))}
         </div>
       </div>
